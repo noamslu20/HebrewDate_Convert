@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Net.Http;
 
 
@@ -29,18 +18,30 @@ namespace HebrewDate_Convert
         private async void ConvertButton_Click(object sender, RoutedEventArgs e)
         {
             string inputDate = GregorianDateTextBox.Text;
-            if (DateTime.TryParse(inputDate, out DateTime parsedDate))
+
+
+            if (!string.IsNullOrWhiteSpace(inputDate) &&
+                 System.Text.RegularExpressions.Regex.IsMatch(inputDate, @"^\d{4}-\d{2}-\d{2}$"))
             {
-                string hebrewDate = await GetHebrewDateAsync(parsedDate);
-                HebrewDateLabel.Content = string.IsNullOrEmpty(hebrewDate)
+                if (DateTime.TryParse(inputDate, out DateTime parsedDate))
+                {
+                    string hebrewDate = await GetHebrewDateAsync(parsedDate);
+                    HebrewDateLabel.Content = string.IsNullOrEmpty(hebrewDate)
                     ? "Conversion failed. Please try again."
                     : $"Hebrew Date: {hebrewDate}";
+                }
+                else
+                {
+                    MessageBox.Show("The entered date is not valid. Please check and try again.");
+                }
             }
             else
             {
                 MessageBox.Show("Please enter a valid date in the format YYYY-MM-DD.");
             }
         }
+
+
 
         private async Task<string> GetHebrewDateAsync(DateTime date)
         {
